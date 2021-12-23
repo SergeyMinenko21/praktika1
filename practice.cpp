@@ -1,20 +1,20 @@
-//13 variant
 #include <iostream>
 #include <iomanip>
+#include <locale.h>
 using namespace std;
 
-enum error_code {
-    OK = 0
-
+enum errorcode {
+    OK = 0,
+    ERR = -1
 };
 
 enum {
-    NAME_SIZE = 20,
+    NAME_SIZE = 32,
     GROUP_MAX_SIZE = 100
     
 };
 
-enum menu_options {
+enum MainMenuOptions {
     INPUTALL = 1,
     OUTPUTALL,
     OUTPUTREQ,
@@ -25,24 +25,25 @@ enum menu_options {
     EXIT = 0
 };
 
-typedef struct student {
+typedef struct Student {
     char surname[NAME_SIZE];
     char name[NAME_SIZE];
     char patronym[NAME_SIZE];
     int grade;
     int year;
-    struct marks {
+    struct Marks {
         int math;
         int geom;
         int prog;
         int graph;
     } marks;
-    
 } student_t;
 
-int group_input(student_t* group, int* groupsize);
-int group_print(student_t* group, int groupsize);
-int print_request(student_t* group, int groupsize);
+int groupInputKey(student_t* group, int* groupsize);
+int groupPrintTerm(student_t* group, int groupsize);
+int printRequest(student_t* group, int groupsize);
+int addStudent(student_t* group, int groupsize);
+int cinFailCheck();
 
 int main() {
     setlocale(LC_ALL, "");
@@ -50,25 +51,25 @@ int main() {
     student_t group[GROUP_MAX_SIZE]; int groupsize{};
     do
     {
-        cout << "ÐžÐ¿Ñ†Ð¸Ð¸ Ð¼ÐµÐ½ÑŽ" << endl;
-        cout << "1 - Ð’Ð²ÐµÑÑ‚Ð¸ Ð½Ð¾Ð²ÑƒÑŽ Ð±Ð°Ð·Ñƒ Ð´Ð°Ð½Ð½Ñ‹Ñ…" << endl;
-        cout << "2 - Ð’Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð²ÑÐµ Ð´Ð°Ð½Ð½Ñ‹Ðµ" << endl;
-        cout << "3 - Ð’Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¿Ð¾ Ð·Ð°Ð¿Ñ€Ð¾ÑÑƒ" << endl;
-        cout << "4 - Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑÑ‚ÑƒÐ´ÐµÐ½Ñ‚Ð° (Ð½Ðµ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð¾)" << endl;
-        cout << "5 - Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ ÑÑ‚ÑƒÐ´ÐµÐ½Ñ‚Ð° (Ð½Ðµ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð¾)" << endl;
-        cout << "6 - Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ ÑÑ‚ÑƒÐ´ÐµÐ½Ñ‚Ð° (Ð½Ðµ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð¾)" << endl;
-        cout << "7 - Ð¡Ð¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ (Ð½Ðµ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð¾)" << endl;
-        cout << "0 - Ð’Ñ‹Ñ…Ð¾Ð´"<< endl;
+        cout << "Îïöèè ìåíþ" << endl;
+        cout << "1 - Ââåñòè íîâóþ áàçó äàííûõ" << endl;
+        cout << "2 - Âûâåñòè âñå äàííûå" << endl;
+        cout << "3 - Âûâåñòè äàííûå ïî çàïðîñó" << endl;
+        cout << "4 - Äîáàâèòü ñòóäåíòà (íå ðåàëèçîâàíî)" << endl;
+        cout << "5 - Ðåäàêòèðîâàòü äàííûå ñòóäåíòà (íå ðåàëèçîâàíî)" << endl;
+        cout << "6 - Óäàëèòü äàííûå ñòóäåíòà (íå ðåàëèçîâàíî)" << endl;
+        cout << "7 - Ñîðòèðîâàòü äàííûå (íå ðåàëèçîâàíî)" << endl;
+        cout << "0 - Âûõîä" << endl;
         cin >> menu_opt;
         switch (menu_opt) {
         case INPUTALL:
-            group_input(group, &groupsize);
+            groupInputKey(group, &groupsize);
             break;
         case OUTPUTALL:
-            group_print(group, groupsize);
+            groupPrintTerm(group, groupsize);
             break;
         case OUTPUTREQ:
-            print_request(group, groupsize);
+            printRequest(group, groupsize);
             break;
         default:
             break;
@@ -79,9 +80,19 @@ int main() {
     return 0;
 }
 
-int group_input(student_t* group, int* groupsize) {
-    cout << "Ð’Ð²Ð¾Ð´Ð¸Ñ‚Ðµ Ð¿Ð¾ÑÐ»ÐµÐ´Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ñ„Ð°Ð¼Ð¸Ð»Ð¸ÑŽ, Ð¸Ð¼Ñ, Ð¾Ñ‚Ñ‡ÐµÑÑ‚Ð²Ð¾, ÐºÑƒÑ€Ñ, Ð³Ð¾Ð´ Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ, Ð¾Ñ†ÐµÐ½ÐºÐ¸" << endl;
-    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ 0, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ñ‚ÑŒ Ð²Ð²Ð¾Ð´" << endl;
+int cinFailCheck() {
+    int flag = OK;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(32767, '\n');
+        flag = ERR;
+    }
+    return flag;
+}
+
+int groupInputKey(student_t* group, int* groupsize) {
+    cout << "Ââîäèòå ïîñëåäîâàòåëüíî ôàìèëèþ, èìÿ, îò÷åñòâî, êóðñ, ãîä ïîñòóïëåíèÿ, 4 îöåíêè" << endl;
+    cout << "Ââåäèòå 0, ÷òîáû çàêîí÷èòü ââîä" << endl;
     
     int i{};
     do
@@ -93,53 +104,46 @@ int group_input(student_t* group, int* groupsize) {
         cin >> group[i].name;
         cin >> group[i].patronym;
         cin >> group[i].grade;
-        if (group[i].grade < 0 || group[i].grade > 6) {
-            cout << "ÐÐ¾Ð¼ÐµÑ€ ÐºÑƒÑ€ÑÐ° Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼, Ð½Ðµ Ð±Ð¾Ð»ÑŒÑˆÐµ 6" << endl;
-            continue;
+        while (cinFailCheck() || group[i].grade <= 0 || group[i].grade > 6) {
+            cout << "Íîìåð êóðñà äîëæåí áûòü ïîëîæèòåëüíûì, íå áîëüøå 6. Ïîïðîáóéòå ñíîâà" << endl;
+            cin >> group[i].grade;
         }
         cin >> group[i].year;
-        if (group[i].year < 0) {
-            cout << "Ð“Ð¾Ð´ Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼" << endl;
-            continue;
+        while (cinFailCheck() || group[i].year <= 1900) {
+            cout << "Ãîä ïîñòóïëåíèÿ äîëæåí áûòü íå ìåíüøå 1900. Ïîïðîáóéòå ñíîâà" << endl;
+            cin >> group[i].year;
         }
         cin >> group[i].marks.math >> group[i].marks.geom >> group[i].marks.prog >> group[i].marks.graph;
-        if ((group[i].marks.math < 0 || group[i].marks.math > 5) || (group[i].marks.geom < 0 || group[i].marks.geom > 5) || 
-        (group[i].marks.prog < 0 || group[i].marks.prog > 5) || (group[i].marks.graph < 0 || group[i].marks.graph > 5)) {
-            cout << "ÐžÑ†ÐµÐ½ÐºÐ° Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð² Ð¿Ñ€ÐµÐ´ÐµÐ»Ð°Ñ… Ð¾Ñ‚ 0 Ð´Ð¾ 5" << endl;
-            continue;
+        while (cinFailCheck() ||  group[i].marks.math < 0 || group[i].marks.math > 5 || group[i].marks.geom < 0 || group[i].marks.geom > 5 || 
+        group[i].marks.prog < 0 || group[i].marks.prog > 5 || group[i].marks.graph < 0 || group[i].marks.graph > 5) {
+            cout << "Îöåíêè ìîãóò áûòü â ïðåäåëàõ îò 0 äî 5. Ââåäèòå îöåíêè ñíà÷àëà" << endl;
+            cin >> group[i].marks.math >> group[i].marks.geom >> group[i].marks.prog >> group[i].marks.graph;
         }
-        if (cin.fail()) {
-            cout << "ÐžÑˆÐ¸Ð±ÐºÐ° Ð²Ð²Ð¾Ð´Ð°. ÐŸÐ¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ ÑÐ½Ð¾Ð²Ð°" << endl;
-            cin.clear();
-            cin.ignore(32767, '\n');
-        }
-        else {
-            i++;
-            cout << "Ð—Ð°Ð¿Ð¸ÑÑŒ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð²Ð²ÐµÐ´ÐµÐ½Ð°" << endl;
-        }
-            
+        i++;
+        cout << "Çàïèñü óñïåøíî ââåäåíà" << endl;
     } while (group && i < GROUP_MAX_SIZE);
     *groupsize = i;
+    if (i == GROUP_MAX_SIZE)
+        cout << "Äîñòèãíóò ìàêñèìàëüíûé ðàçìåð ãðóïïû" << endl;
     return OK;
 }
 
-int group_print(student_t* group, int groupsize) {
-    // ÐšÐ°Ðº Ð±Ð¾Ñ€Ð¾Ñ‚ÑŒÑÑ ÑÐ¾ ÐºÑ€Ð¸Ð²Ð¾Ð¹ ÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²ÐºÐ¾Ð¹?
-    cout << setw(6) << left << "ÐÐ¾Ð¼ÐµÑ€"; 
-    cout << setw(21) << left << "Ð¤Ð°Ð¼Ð¸Ð»Ð¸Ñ"; 
-    cout << setw(21) << left << "Ð˜Ð¼Ñ"; 
-    cout << setw(21) << left << "ÐžÑ‚Ñ‡ÐµÑÑ‚Ð²Ð¾";
-    cout << setw(5) << left << "ÐšÑƒÑ€Ñ";
-    cout << setw(16) << left << "Ð“Ð¾Ð´ Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ";
-    cout << setw(11) << left << "ÐœÐ°Ñ‚.Ð°Ð½Ð°Ð»Ð¸Ð·"; 
-    cout << setw(13) << left << "ÐÐ½Ð°Ð»Ð¸Ñ‚.Ð³ÐµÐ¾Ð¼."; 
-    cout << setw(9) << left << "ÐŸÑ€Ð¾Ð³Ñ€Ð°Ð¼."; 
-    cout << setw(10) << left << "Ð˜Ð½Ð¶.Ð³Ñ€Ð°Ñ„." << endl;
+int groupPrintTerm(student_t* group, int groupsize) {
+    cout << setw(6) << left << "Íîìåð"; 
+    cout << setw(22) << left << "Ôàìèëèÿ"; 
+    cout << setw(22) << left << "Èìÿ"; 
+    cout << setw(22) << left << "Îò÷åñòâî";
+    cout << setw(5) << left << "Êóðñ";
+    cout << setw(16) << left << "Ãîä ïîñòóïëåíèÿ";
+    cout << setw(11) << left << "Ìàò.àíàëèç"; 
+    cout << setw(13) << left << "Àíàëèò.ãåîì."; 
+    cout << setw(9) << left << "Ïðîãðàì."; 
+    cout << setw(10) << left << "Èíæ.ãðàô." << endl;
     for (int i = 0; i < groupsize; i++) {
         cout << setw(6) << left << i + 1;
-        cout << setw(21) << left << group[i].surname;
-        cout << setw(21) << left << group[i].name;
-        cout << setw(21) << left << group[i].patronym;
+        cout << setw(22) << left << group[i].surname;
+        cout << setw(22) << left << group[i].name;
+        cout << setw(22) << left << group[i].patronym;
         cout << setw(5) << left << group[i].grade;
         cout << setw(16) << left << group[i].year;
         cout << setw(11) << left << group[i].marks.math;
@@ -148,14 +152,13 @@ int group_print(student_t* group, int groupsize) {
         cout << setw(10) << left << group[i].marks.graph;
         cout << endl;
     }
-//    cout << "Ð’Ð»Ð°Ð´Ð¸Ð¼Ð¸Ñ€Ð¾Ð²Ð¸Ñ‡"; // char[25]
     return OK;
 }
 
-int print_request(student_t* group, int groupsize) {
+int printRequest(student_t* group, int groupsize) {
     int sum{}, amount{}, year{};
     double res{};
-    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð³Ð¾Ð´ Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ" << endl;
+    cout << "Ââåäèòå ãîä ïîñòóïëåíèÿ" << endl;
     cin >> year;
     for (int i = 0; i < groupsize; i++)
     {
@@ -166,10 +169,38 @@ int print_request(student_t* group, int groupsize) {
     }
 
     if (sum == 0)
-        cout << "ÐÐµÑ‚ ÑÑ‚ÑƒÐ´ÐµÐ½Ñ‚Ð¾Ð² Ñ Ñ‚Ð°ÐºÐ¸Ð¼ Ð³Ð¾Ð´Ð¾Ð¼ Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ" << endl;
+        cout << "Íåò ñòóäåíòîâ ñ òàêèì ãîäîì ïîñòóïëåíèÿ" << endl;
     else {
         res = 1.0 * sum / amount;
-        cout << "Ð¡Ñ€ÐµÐ´Ð½Ð¸Ð¹ Ð±Ð°Ð»Ð» Ð·Ð° Ð³Ð¾Ð´ " << year << " = " << res << endl;
+        cout << "Ñðåäíèé áàëë çà ãîä " << year << " = " << res << endl;
     }
     return OK;
+}
+
+int addStudent(student_t* group, int groupsize, int i) {
+    cin >> group[i].surname;
+        if (group[i].surname[0] == '0') {
+            return OK;
+        }
+        cin >> group[i].name;
+        cin >> group[i].patronym;
+        cin >> group[i].grade;
+        while (cinFailCheck() || group[i].grade <= 0 || group[i].grade > 6) {
+            cout << "Íîìåð êóðñà äîëæåí áûòü ïîëîæèòåëüíûì, íå áîëüøå 6. Ïîïðîáóéòå ñíîâà" << endl;
+            cin >> group[i].grade;
+        }
+        cin >> group[i].year;
+        while (cinFailCheck() || group[i].year <= 1900) {
+            cout << "Ãîä ïîñòóïëåíèÿ äîëæåí áûòü íå ìåíüøå 1900. Ïîïðîáóéòå ñíîâà" << endl;
+            cin >> group[i].year;
+        }
+        cin >> group[i].marks.math >> group[i].marks.geom >> group[i].marks.prog >> group[i].marks.graph;
+        while (cinFailCheck() ||  group[i].marks.math < 0 || group[i].marks.math > 5 || group[i].marks.geom < 0 || group[i].marks.geom > 5 || 
+        group[i].marks.prog < 0 || group[i].marks.prog > 5 || group[i].marks.graph < 0 || group[i].marks.graph > 5) {
+            cout << "Îöåíêè ìîãóò áûòü â ïðåäåëàõ îò 0 äî 5. Ââåäèòå îöåíêè ñíà÷àëà" << endl;
+            cin >> group[i].marks.math >> group[i].marks.geom >> group[i].marks.prog >> group[i].marks.graph;
+        }
+        i++;
+        cout << "Çàïèñü óñïåøíî ââåäåíà" << endl;
+    return i;
 }
